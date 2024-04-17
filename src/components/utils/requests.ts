@@ -36,5 +36,9 @@ async function SendDeleteRequest(url: string, body: any, setResponse: Function) 
     await SendRequest(url, 'DELETE', body, setResponse);
 }
 
+async function SendPatchRequest(url: string, body: any, setResponse: Function) {
+    await SendRequest(url, 'PATCH', body, setResponse);
+}
+
 export default SendRequest;
-export { SendGetRequest, SendPostRequest, SendDeleteRequest };
+export { SendGetRequest, SendPostRequest, SendDeleteRequest, SendPatchRequest };

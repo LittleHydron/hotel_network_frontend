@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SendDeleteRequest, SendGetRequest, SendPostRequest } from "../utils/requests";
+import { SendDeleteRequest, SendGetRequest, SendPostRequest, SendPatchRequest } from "../utils/requests";
 import CreateButton from "../Buttons/Button";
 
 
@@ -66,6 +66,44 @@ function generatePostForm(fields: string[], name: string, setResponse: Function)
   );
 }
 
+function generatePatchForm(fields: string[], name: string, setResponse: Function): any {
+  return (
+    <div style = {{justifyContent: "center", display: "flex", flexDirection: "column", width: "15%", margin: "0 auto"}}>
+      <form>
+        <br />
+        <br />
+        <div> Edit {name} </div>
+        <div style={{display: "flex", flexDirection: "column", justifyContent: "center", margin: "10px"}}>
+          <label style={{margin: "2px"}}>id</label>
+          <input id='patch_id' type="text" name='patchId' />
+        </div>
+        {fields.map((field, index) => {
+          return (
+            <div key={index} style={{display: "flex", flexDirection: "column", justifyContent: "center", margin: "10px"}}>
+              <label style={{margin: "2px"}}>{field}</label>
+              <input id={`patch_${field}`} type="text" name={field} />
+            </div>
+          );
+        })}
+        <CreateButton title={`Edit ` + name} onClick={(e) => {
+          e.preventDefault();
+          let body: any = {};
+          fields.forEach((field) => {
+            let element = document.getElementById(`patch_${field}`) as HTMLInputElement;
+            body[field] = element.value;
+            element.value = '';
+          });
+          let element = document.getElementById('patch_id') as HTMLInputElement;
+          body['id'] = element.value;
+          element.value = '';
+          SendPatchRequest(name.toLowerCase() + '/' + body['id'], body, setResponse);
+        }} />
+      </form>
+    </div>
+  );
+
+}
+
 function Page({ name }: { name: string }) {
   const [objects, setObjects] = useState([]);
   const [response, setResponse] = useState({});
@@ -101,6 +139,7 @@ function Page({ name }: { name: string }) {
       <div>{ getMessage(response) }</div>
       { generatePostForm(fields, name, setResponse) }
       { generateDeleteForm(name, setResponse) }
+      { generatePatchForm(fields, name, setResponse) }
       <br />
       <br />
       <CreateButton title={`Import ` + name + ` from csv`} onClick={(e) => {
